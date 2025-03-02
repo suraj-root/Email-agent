@@ -1,0 +1,441 @@
+{
+  "name": "HACKATHON",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "UNREAD"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1240,
+        280
+      ],
+      "id": "96ff6120-c433-4d01-943a-ccd601ad44f8",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3rHYOf9YEMlGA7LN",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}\n",
+        "categories": {
+          "categories": [
+            {
+              "category": "High Priority Mail",
+              "description": "Anything related towards official meetings, job platforms, Designated person's email .Keyword : Important"
+            },
+            {
+              "category": "Low priority Mail",
+              "description": "Includes spam, Phishing mails ,Promotions , and gaming contents ,updates. "
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Please classify the text provided by the user into one of the following categories: {categories}, and use the provided formatting instructions below. Don't explain, and only output the json."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        280
+      ],
+      "id": "995ec45f-e87d-4bc5-aadb-850ef6ac49ba",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "IMPORTANT"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        120
+      ],
+      "id": "aab48199-4ea7-4ff9-bd17-91b3a4821850",
+      "name": "Gmail",
+      "webhookId": "6d0c21c6-ff44-4593-916c-ec921d7a4d67",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3rHYOf9YEMlGA7LN",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "UNREAD"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        380
+      ],
+      "id": "06c3cf54-4c55-4070-bbd6-d5316d1f4eb3",
+      "name": "Gmail1",
+      "webhookId": "4d367c98-22a2-4e0c-9d4e-dc99da9d377e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3rHYOf9YEMlGA7LN",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.text }}",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        180,
+        100
+      ],
+      "id": "08b7d46a-d7a9-4c37-a7b9-d476008224e5",
+      "name": "Gmail2",
+      "webhookId": "07541155-b2d3-473b-8165-89d898460968",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3rHYOf9YEMlGA7LN",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -940,
+        520
+      ],
+      "id": "3f7dd0de-a11f-4123-8d41-6b049aa89785",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FknPWNc0MBHeS7Ig",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6473251321",
+        "text": "=We received  your an important mail ,sir please check your mail imdedately.. THIS is VERY important mail for you sir.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        100
+      ],
+      "id": "17d95c82-ae80-4727-8e2c-4fabb9447f98",
+      "name": "Telegram",
+      "webhookId": "c496ce84-fe97-4e78-b140-98efa9fe1c65",
+      "credentials": {
+        "telegramApi": {
+          "id": "3Xkbeb45S4Vtp2OS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.id }}{{ $json.snippet }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "230a05e5-2f09-42f6-a572-e602ef06e7e3",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        160
+      ],
+      "id": "e3708863-54df-43d5-b524-4b409b8819f3",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FknPWNc0MBHeS7Ig",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "{{ $json.id }}{{ $json.snippet }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -300,
+        480
+      ],
+      "id": "ffb1c90c-29f0-432d-b6b4-4199fcbdac94",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        620
+      ],
+      "id": "b3ca45d9-bb31-4d96-a035-1aedd2ddedb9",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FknPWNc0MBHeS7Ig",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Text Classifier').item.json.headers['reply-to'] }}",
+        "subject": "={{ $json.text }}",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        180,
+        400
+      ],
+      "id": "09ac198b-04ae-47e5-9f63-d4932613f1e0",
+      "name": "Gmail3",
+      "webhookId": "e7bf7108-e537-47e8-bcea-71db05617893",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3rHYOf9YEMlGA7LN",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.id }}",
+        "text": "=sir you have recieved an unimportant mail like social media promotion mail,promotioal companies mails{{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        400
+      ],
+      "id": "d29e1a59-03e8-421e-869e-036f601ee24b",
+      "name": "Telegram1",
+      "webhookId": "6784003c-6236-4c54-9372-eb3b2fdfff59",
+      "credentials": {
+        "telegramApi": {
+          "id": "3Xkbeb45S4Vtp2OS",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail2": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail3": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "079c4c94-d75b-46a4-8ef3-a88dd2463aca",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "daee49590af5209742f8433247cac2b9d7c412ec57d5e9580b392abe16d1c8d1"
+  },
+  "id": "ahiWC1MhUrKxIhAs",
+  "tags": [
+    {
+      "name": "EmailAgent",
+      "id": "Fn1pOIidAw290YkX",
+      "createdAt": "2025-03-01T17:12:26.109Z",
+      "updatedAt": "2025-03-01T17:12:26.109Z"
+    }
+  ]
+}
